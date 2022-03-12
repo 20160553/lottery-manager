@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pensionWinNumberLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <TextView
+            android:id="@+id/pensionGroupNumber"
+            android:textSize="28sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionGroupTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <TextView
+            android:id="@+id/pensionGroupTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="조"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionFirstNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionGroupNumber"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionFirstNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionSecondNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionGroupTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionSecondNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionThirdNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionFirstNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionThirdNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionFourthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionSecondNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="3" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionFourthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionFifthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionThirdNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="4" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionFifthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionSixthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionFourthNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="5" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionSixthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pensionFifthNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="6" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pensionBonusNumberLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/pensionWinNumberLayout"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <TextView
+            android:id="@+id/pensionBonusGroupNumber"
+            android:textSize="28sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusGroupTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="모든" />
+
+        <TextView
+            android:id="@+id/pensionBonusGroupTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="조"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusFirstNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusGroupNumber"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusFirstNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusSecondNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusGroupTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="1" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusSecondNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusThirdNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusFirstNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="2" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusThirdNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusFourthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusSecondNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="3" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusFourthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusFifthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusThirdNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="4" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusFifthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/pensionBonusSixthNumber"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusFourthNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="5" />
+
+        <TextView
+            android:textSize="28sp"
+            android:id="@+id/pensionBonusSixthNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/pensionBonusFifthNumber"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="6" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

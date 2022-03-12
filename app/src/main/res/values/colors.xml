@@ -7,4 +7,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="gray_31">#FF313131</color>
+    <color name="selector_blue">#FF03A9F4</color>
+    <color name="lottery_number_0">#FF9e9e9e</color>
+    <color name="lottery_number_1">#FFf06292</color>
+    <color name="lottery_number_2">#FFff8a65</color>
+    <color name="lottery_number_3">#FFffeb3b</color>
+    <color name="lottery_number_4">#FF64b5f6</color>
+    <color name="lottery_number_5">#FF7986cb</color>
+    <color name="lottery_number_6">#FF9ccc65</color>
 </resources>
