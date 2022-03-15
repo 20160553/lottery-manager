@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/lottoFirstNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lottoSecondNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@drawable/lottery_number_shape_1"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/lottoSecondNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/lottoThirdNumber"
+        app:layout_constraintStart_toEndOf="@id/lottoFirstNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_number_shape_2"
+        tools:text="2" />
+
+    <TextView
+        android:id="@+id/lottoThirdNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/lottoFourthNumber"
+        app:layout_constraintStart_toEndOf="@id/lottoSecondNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_number_shape_3"
+        tools:text="3" />
+
+    <TextView
+        android:id="@+id/lottoFourthNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/lottoFifthNumber"
+        app:layout_constraintStart_toEndOf="@id/lottoThirdNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_fourth_number_shape"
+        tools:text="4" />
+
+    <TextView
+        android:id="@+id/lottoFifthNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/lottoSixthNumber"
+        app:layout_constraintStart_toEndOf="@id/lottoFourthNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_number_shape_5"
+        tools:text="5" />
+
+    <TextView
+        android:id="@+id/lottoSixthNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/bonusTextView"
+        app:layout_constraintStart_toEndOf="@id/lottoFifthNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_number_shape_6"
+        tools:text="6" />
+
+    <TextView
+        android:id="@+id/bonusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="+"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toStartOf="@id/bonusNumber"
+        app:layout_constraintStart_toEndOf="@id/lottoSixthNumber"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber" />
+
+    <TextView
+        android:id="@+id/bonusNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/lottoFirstNumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bonusTextView"
+        app:layout_constraintTop_toTopOf="@id/lottoFirstNumber"
+        tools:background="@drawable/lottery_number_shape_0"
+        tools:text="7" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
