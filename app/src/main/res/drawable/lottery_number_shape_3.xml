@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <stroke
-        android:color="@color/lottery_number_0" android:width="20dp" />
+    <solid
+        android:color="@color/lottery_number_3"/>
+    <size
+        android:width="36dp" android:height="36dp" />
 </shape>

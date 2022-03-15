@@ -56,19 +56,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="28sp"
+            app:layout_constraintBottom_toBottomOf="@id/qrcodeLaunchButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/qrcodeLaunchButton"
-            app:layout_constraintBottom_toBottomOf="@id/qrcodeLaunchButton"
             tools:text="1004회 당첨번호" />
 
         <ImageButton
             android:id="@+id/qrcodeLaunchButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
             android:background="@color/white"
             android:src="@drawable/ic_baseline_qr_code_scanner_48"
-            android:layout_marginEnd="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lotteryRadioGroup"
             app:tint="@color/selector_blue" />
@@ -77,9 +77,9 @@
             android:id="@+id/refreshButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
             android:background="@color/white"
             android:src="@drawable/ic_baseline_refresh_48"
-            android:layout_marginStart="15dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lotteryRadioGroup"
             app:tint="@color/selector_blue" />
@@ -95,10 +95,27 @@
         <include
             android:id="@+id/lottoLayout"
             layout="@layout/lotto_layout"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/pensionLayout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sotredResultLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/resultLayout">
+
+        <TextView
+            android:text="내 복권 내역 확인하기"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         initQRCodeScanner()
         initViews()
         getRecentResult()
-        getQrCodeScanResultPension()
     }
 
     private fun initViews() = with(binding) {
@@ -47,6 +46,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             setPrompt("QR코드를 인증해주세요.")
             //핸드폰 방향에 맞게 변경
             setOrientationLocked(false)
+        }
+        refreshButton.setOnClickListener {
+            getRecentResult()
         }
         qrcodeLaunchButton.setOnClickListener {
             qrcodeLauncher.launch(options)
@@ -74,6 +76,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             } else {
                 //QR Scanning Successed
                 Toast.makeText(this, "${result.contents}", Toast.LENGTH_SHORT).show()
+                getQrCodeScanResultPension()
             }
         }
     }
@@ -92,11 +95,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                     val doc: Document = jsoup.get()
                     val elements: Elements = doc
                         .select("div.slide_item")
-                    //로또 최근 당첨번호 크롤링
+                    Log.d("recentResult", elements.toString())
+
+                    //로또 최근 당첨회차 크롤링
                     mainViewModel.currentLottoRound =
                         elements[0].select("strong.round.key_clr1").text()
                     for (i in 1..6) {
                         if (i != 6) {
+                            //십의 자리가 i인 번호 얻어오기
                             elements[0].select("div.num.clr$i span").text().split(" ")
                                 .forEach {
                                     it.toIntOrNull()?.let {
@@ -128,42 +134,66 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                     mainViewModel.currentLottoWinArray = lottoArray
                     mainViewModel.currentPensionWinArray = pensionArray
                     mainViewModel.currentPensionBonusArray = pensionBonusArray
+                    Log.d("currentLotto", mainViewModel.currentLottoWinArray.toString())
+                    Log.d("currentPension", mainViewModel.currentPensionWinArray.toString())
+                    Log.d("currentPensionBonus", mainViewModel.currentPensionBonusArray.toString())
                 } catch (httpStatusException: HttpStatusException) {
 
                 }
             }
-            if (binding.lottoRadioButton.isChecked)
-                binding.roundTextView.text = mainViewModel.currentLottoRound
-            else
-                binding.roundTextView.text = mainViewModel.currentPensionRound
+            displayRecentResult()
+        }
+    }
 
-            Log.d("it5", mainViewModel.currentPensionBonusArray.toString())
-            binding.pensionLayout.let {
-                it.pensionBonusGroupNumber.text = "모든"
-                it.pensionBonusFirstNumber.text = "${mainViewModel.currentPensionBonusArray[0]}"
-                it.pensionBonusSecondNumber.text = "${mainViewModel.currentPensionBonusArray[1]}"
-                it.pensionBonusThirdNumber.text = "${mainViewModel.currentPensionBonusArray[2]}"
-                it.pensionBonusFourthNumber.text = "${mainViewModel.currentPensionBonusArray[3]}"
-                it.pensionBonusFifthNumber.text = "${mainViewModel.currentPensionBonusArray[4]}"
-                it.pensionBonusSixthNumber.text = "${mainViewModel.currentPensionBonusArray[5]}"
+    private fun displayRecentResult() {
+        if (binding.lottoRadioButton.isChecked)
+            binding.roundTextView.text = mainViewModel.currentLottoRound
+        else
+            binding.roundTextView.text = mainViewModel.currentPensionRound
 
-                it.pensionGroupNumber.text = "${mainViewModel.currentPensionWinArray[0]}"
-                it.pensionFirstNumber.text = "${mainViewModel.currentPensionWinArray[1]}"
-                it.pensionSecondNumber.text = "${mainViewModel.currentPensionWinArray[2]}"
-                it.pensionThirdNumber.text = "${mainViewModel.currentPensionWinArray[3]}"
-                it.pensionFourthNumber.text = "${mainViewModel.currentPensionWinArray[4]}"
-                it.pensionFifthNumber.text = "${mainViewModel.currentPensionWinArray[5]}"
-                it.pensionSixthNumber.text = "${mainViewModel.currentPensionWinArray[6]}"
-            }
+        Log.d("it5", mainViewModel.currentPensionBonusArray.toString())
+        binding.pensionLayout.let {
+            it.pensionBonusGroupNumber.text = "모든"
+            it.pensionBonusFirstNumber.text = "${mainViewModel.currentPensionBonusArray[0]}"
+            it.pensionBonusSecondNumber.text = "${mainViewModel.currentPensionBonusArray[1]}"
+            it.pensionBonusThirdNumber.text = "${mainViewModel.currentPensionBonusArray[2]}"
+            it.pensionBonusFourthNumber.text = "${mainViewModel.currentPensionBonusArray[3]}"
+            it.pensionBonusFifthNumber.text = "${mainViewModel.currentPensionBonusArray[4]}"
+            it.pensionBonusSixthNumber.text = "${mainViewModel.currentPensionBonusArray[5]}"
 
-            binding.lottoLayout.let {
-                it.lottoFirstNumber.text = "${mainViewModel.currentLottoWinArray[0]}"
-                it.lottoSecondNumber.text = "${mainViewModel.currentLottoWinArray[1]}"
-                it.lottoThirdNumber.text = "${mainViewModel.currentLottoWinArray[2]}"
-                it.lottoFourthNumber.text = "${mainViewModel.currentLottoWinArray[3]}"
-                it.lottoFifthNumber.text = "${mainViewModel.currentLottoWinArray[4]}"
-                it.lottoSixthNumber.text = "${mainViewModel.currentLottoWinArray[5]}"
-                it.bonusNumber.text = "${mainViewModel.currentLottoWinArray[6]}"
+            it.pensionGroupNumber.text = "${mainViewModel.currentPensionWinArray[0]}"
+            it.pensionFirstNumber.text = "${mainViewModel.currentPensionWinArray[1]}"
+            it.pensionSecondNumber.text = "${mainViewModel.currentPensionWinArray[2]}"
+            it.pensionThirdNumber.text = "${mainViewModel.currentPensionWinArray[3]}"
+            it.pensionFourthNumber.text = "${mainViewModel.currentPensionWinArray[4]}"
+            it.pensionFifthNumber.text = "${mainViewModel.currentPensionWinArray[5]}"
+            it.pensionSixthNumber.text = "${mainViewModel.currentPensionWinArray[6]}"
+        }
+
+        binding.lottoLayout.let {
+            it.lottoFirstNumber.text = "${mainViewModel.currentLottoWinArray[0]}"
+            it.lottoSecondNumber.text = "${mainViewModel.currentLottoWinArray[1]}"
+            it.lottoThirdNumber.text = "${mainViewModel.currentLottoWinArray[2]}"
+            it.lottoFourthNumber.text = "${mainViewModel.currentLottoWinArray[3]}"
+            it.lottoFifthNumber.text = "${mainViewModel.currentLottoWinArray[4]}"
+            it.lottoSixthNumber.text = "${mainViewModel.currentLottoWinArray[5]}"
+            it.bonusNumber.text = "${mainViewModel.currentLottoWinArray[6]}"
+            for (i in 0..6) {
+                val resource = applicationContext.resources.getIdentifier(
+                    "lottery_number_shape_${mainViewModel.currentLottoWinArray[i] / 10}",
+                    "drawable",
+                    applicationContext.packageName
+                )
+                it.bonusNumber.setBackgroundResource(R.drawable.lottery_number_shape_0)
+                when (i) {
+                    0 -> it.lottoFirstNumber.setBackgroundResource(resource)
+                    1 -> it.lottoSecondNumber.setBackgroundResource(resource)
+                    2 -> it.lottoThirdNumber.setBackgroundResource(resource)
+                    3 -> it.lottoFourthNumber.setBackgroundResource(resource)
+                    4 -> it.lottoFifthNumber.setBackgroundResource(resource)
+                    5 -> it.lottoSixthNumber.setBackgroundResource(resource)
+                    6 -> it.bonusNumber.setBackgroundResource(resource)
+                }
             }
         }
     }
@@ -186,9 +216,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                     //div 태그의 class="win720_num"인 요소들 파싱
                     val elements: Elements = doc
                         .select("div.win720_num")
-
-                    Log.d("jsoup1", elements.toString())
-
                     //당첨 번호 추출
                     for (i in 0..1) {
                         val tempList = arrayListOf<Int>()
@@ -229,10 +256,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                         myNumber.add(temp.text().toInt())
                     }
                     Log.d("jsoup3", myNumber.toString())
-                } catch (httpStatusException: HttpStatusException) {
+                } catch (e: Exception) {
 
                 }
             }
+            //after
         }
     }
 
