@@ -7,6 +7,10 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isGone
 import aqper.side_project.lotterymanager.databinding.ActivityMainBinding
+import aqper.side_project.lotterymanager.models.MyLottoNumber
+import aqper.side_project.lotterymanager.models.MyLottoResult
+import aqper.side_project.lotterymanager.models.MyPensionNumber
+import aqper.side_project.lotterymanager.models.MyPensionResult
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.*
@@ -34,6 +38,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         initQRCodeScanner()
         initViews()
         getRecentResult()
+        getQrCodeScanResultLotto()
+        getQrCodeScanResultPension()
     }
 
     private fun initViews() = with(binding) {
@@ -208,8 +214,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                         Jsoup.connect("https://m.dhlottery.co.kr/qr.do?method=winQr&v=pd1200975s865901")
                     //사이트 크롤링
                     val doc: Document = jsoup.get()
-                    //내 복권번호
-                    val myNumber: ArrayList<Int> = arrayListOf()
+
+                    //이전코드
+                    //val myNumber: ArrayList<Int> = arrayListOf()
+                    val myNumberList: ArrayList<Int> = arrayListOf()
+                    val backgroundList = arrayListOf<Boolean>()
+                    val bonusBackgroundList = arrayListOf<Boolean>()
+                    var myPensionResult: MyPensionResult
+
                     //당첨 복권번호 (1등, 보너스)
                     val winNumber: ArrayList<ArrayList<Int>> = arrayListOf()
 
@@ -244,18 +256,99 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
                     Log.d("jsoup2", winNumber.toString())
 
-                    //내 번호 추출하기
-                    myNumber.add(
+                    val groupNum =
                         elements[2]
                             .select("span.group_list span")
                             .text().toInt()
+
+                    if (winNumber[0][0] == groupNum)
+                        backgroundList.add(true)
+                    else
+                        backgroundList.add(false)
+
+                    //내 번호 추출하기
+                    myNumberList.add(
+                        groupNum
                     )
+
+                    val result = doc.select("strong.result").text().toString().split(" ")
+
                     for (i in 1..6) {
                         val temp = elements[2]
                             .select("span.num.al720_color$i span")
-                        myNumber.add(temp.text().toInt())
+                        val num = temp.text().toInt()
+                        myNumberList.add(num)
+                        if (winNumber[0][i] == groupNum)
+                            backgroundList.add(true)
+                        else
+                            backgroundList.add(false)
+                        if (i < 6 && winNumber[1][i] == groupNum)
+                            bonusBackgroundList.add(true)
+                        else
+                            bonusBackgroundList.add(false)
                     }
-                    Log.d("jsoup3", myNumber.toString())
+                    Log.d("jsoup3", myNumberList.toString())
+                    myPensionResult = MyPensionResult(result[0], result[1], MyPensionNumber(backgroundList, myNumberList, bonusBackgroundList))
+                } catch (e: Exception) {
+
+                }
+            }
+            //after
+        }
+    }
+
+    //로또 6/45 QR 코드 스캔 결과 크롤링 함수
+    private fun getQrCodeScanResultLotto() {
+        launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    //크롤링할 주소 지정
+                    val jsoup =
+                        Jsoup.connect("https://m.dhlottery.co.kr/qr.do?method=winQr&v=1000q012023374344q040620213345q121520233739q232830333437q0218202132441739553448")
+                    //사이트 크롤링
+                    val doc: Document = jsoup.get()
+                    Log.d("lottoDoc", doc.toString())
+
+                    //당첨 복권번호 1등
+                    val winNumber: ArrayList<Int> = arrayListOf()
+                    //내 번호
+                    val myLottoResults: ArrayList<MyLottoResult> = arrayListOf()
+
+                    //1등 번호 추출
+                    val winElements = doc.select("div.bx_winner")
+                    Log.d("winLotto", winElements.toString())
+
+                    val temp = winElements
+                        .select("div.clr.clr span").text()
+                    Log.d("winLottoNum", temp)
+
+                    //1등 당첨번호 숫자 배열로 변환
+                    temp.split(" ").forEach {
+                        winNumber.add(it.toInt())
+                    }
+
+                    //내 번호 추출
+                    val myNumberElements = doc.select("div.list_my_number")
+                    Log.d("myLotto", myNumberElements.toString())
+
+                    //내 번호 차례대로 추출
+                    myNumberElements.select("tr")
+                        .forEach {
+                            val tempList = arrayListOf<Int>()
+                            val tempBackgroundList = arrayListOf<Int>()
+                            val tempResult = it.select("td.result").text()
+                            it.select("span.clr").text().split(" ").forEach { n ->
+                                val num = n.toInt()
+                                if (winNumber.contains(num)) {
+                                    tempBackgroundList.add(num/10)
+                                } else {
+                                    tempBackgroundList.add(-1)
+                                }
+                                tempList.add(num)
+                            }
+                            myLottoResults.add(MyLottoResult(tempResult,MyLottoNumber(tempBackgroundList, tempList)))
+                        }
+                    Log.d("myLottos", myLottoResults.toString())
                 } catch (e: Exception) {
 
                 }
