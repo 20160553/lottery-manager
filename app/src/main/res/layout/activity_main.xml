@@ -86,7 +86,7 @@
 
         <include
             android:id="@+id/pensionLayout"
-            layout="@layout/pension_lottery_layout"
+            layout="@layout/current_pension_lottery_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
@@ -94,7 +94,7 @@
 
         <include
             android:id="@+id/lottoLayout"
-            layout="@layout/lotto_layout"
+            layout="@layout/current_lotto_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"

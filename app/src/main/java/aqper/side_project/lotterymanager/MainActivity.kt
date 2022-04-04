@@ -1,5 +1,10 @@
 package aqper.side_project.lotterymanager
 
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -38,8 +43,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         initQRCodeScanner()
         initViews()
         getRecentResult()
-        getQrCodeScanResultLotto()
-        getQrCodeScanResultPension()
     }
 
     private fun initViews() = with(binding) {
@@ -81,14 +84,33 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 Toast.makeText(this, "QR코드 인증이 취소되었습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 //QR Scanning Successed
-                Toast.makeText(this, "${result.contents}", Toast.LENGTH_SHORT).show()
-                getQrCodeScanResultPension()
+                //연금복권인 경우
+                if (result.contents.contains("dhlottery.co.kr/?v=pd120")) {
+                    val url = result.contents.replace("http://qr.dhlottery.co.kr/?v=", "https://m.dhlottery.co.kr/qr.do?method=winQr&v=")
+                    val intent = Intent(this, PensionResultActivity::class.java)
+                    intent.putExtra(PENSION_RESULT_KEY, url)
+                    startActivity(intent)
+                }
+                //로또 복권인 경우
+                else if (result.contents.contains("dhlottery.co.kr/?v=")) {
+                    val url = result.contents.replace("http://m.dhlottery.co.kr/?v=", "https://m.dhlottery.co.kr/qr.do?method=winQr&v=")
+                    val intent = Intent(this, LottoResultActivity::class.java)
+                    intent.putExtra(LOTTO_RESULT_KEY, url)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(this, "유효하지 않은 QR 코드입니다.", Toast.LENGTH_SHORT).show()
+                    return@registerForActivityResult
+                }
             }
         }
     }
 
     private fun getRecentResult() {
         launch {
+            if (!isNetworkAvailable(this@MainActivity)){
+                Toast.makeText(this@MainActivity, "최신 정보를 불러오는 데 실패했습니다.\n인터넷 연결 상태를 확인해주세요.", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
             val pensionArray = arrayListOf<Int>()
             val pensionBonusArray = arrayListOf<Int>()
             val lottoArray = arrayListOf<Int>()
@@ -144,7 +166,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                     Log.d("currentPension", mainViewModel.currentPensionWinArray.toString())
                     Log.d("currentPensionBonus", mainViewModel.currentPensionBonusArray.toString())
                 } catch (httpStatusException: HttpStatusException) {
-
+                    Toast.makeText(this@MainActivity, "최신 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
             displayRecentResult()
@@ -157,7 +179,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         else
             binding.roundTextView.text = mainViewModel.currentPensionRound
 
-        Log.d("it5", mainViewModel.currentPensionBonusArray.toString())
         binding.pensionLayout.let {
             it.pensionBonusGroupNumber.text = "모든"
             it.pensionBonusFirstNumber.text = "${mainViewModel.currentPensionBonusArray[0]}"
@@ -177,12 +198,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
 
         binding.lottoLayout.let {
-            it.lottoFirstNumber.text = "${mainViewModel.currentLottoWinArray[0]}"
-            it.lottoSecondNumber.text = "${mainViewModel.currentLottoWinArray[1]}"
-            it.lottoThirdNumber.text = "${mainViewModel.currentLottoWinArray[2]}"
-            it.lottoFourthNumber.text = "${mainViewModel.currentLottoWinArray[3]}"
-            it.lottoFifthNumber.text = "${mainViewModel.currentLottoWinArray[4]}"
-            it.lottoSixthNumber.text = "${mainViewModel.currentLottoWinArray[5]}"
+            it.lottoNumber1.text = "${mainViewModel.currentLottoWinArray[0]}"
+            it.lottoNumber2.text = "${mainViewModel.currentLottoWinArray[1]}"
+            it.lottoNumber3.text = "${mainViewModel.currentLottoWinArray[2]}"
+            it.lottoNumber4.text = "${mainViewModel.currentLottoWinArray[3]}"
+            it.lottoNumber5.text = "${mainViewModel.currentLottoWinArray[4]}"
+            it.lottoNumber6.text = "${mainViewModel.currentLottoWinArray[5]}"
             it.bonusNumber.text = "${mainViewModel.currentLottoWinArray[6]}"
             for (i in 0..6) {
                 val resource = applicationContext.resources.getIdentifier(
@@ -190,174 +211,43 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                     "drawable",
                     applicationContext.packageName
                 )
-                it.bonusNumber.setBackgroundResource(R.drawable.lottery_number_shape_0)
                 when (i) {
-                    0 -> it.lottoFirstNumber.setBackgroundResource(resource)
-                    1 -> it.lottoSecondNumber.setBackgroundResource(resource)
-                    2 -> it.lottoThirdNumber.setBackgroundResource(resource)
-                    3 -> it.lottoFourthNumber.setBackgroundResource(resource)
-                    4 -> it.lottoFifthNumber.setBackgroundResource(resource)
-                    5 -> it.lottoSixthNumber.setBackgroundResource(resource)
+                    0 -> it.lottoNumber1.setBackgroundResource(resource)
+                    1 -> it.lottoNumber2.setBackgroundResource(resource)
+                    2 -> it.lottoNumber3.setBackgroundResource(resource)
+                    3 -> it.lottoNumber4.setBackgroundResource(resource)
+                    4 -> it.lottoNumber5.setBackgroundResource(resource)
+                    5 -> it.lottoNumber6.setBackgroundResource(resource)
                     6 -> it.bonusNumber.setBackgroundResource(resource)
                 }
             }
         }
     }
 
-    //연금복권 QR 코드 스캔 결과 크롤링 함수
-    private fun getQrCodeScanResultPension() {
-        launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    //크롤링할 주소 지정
-                    val jsoup =
-                        Jsoup.connect("https://m.dhlottery.co.kr/qr.do?method=winQr&v=pd1200975s865901")
-                    //사이트 크롤링
-                    val doc: Document = jsoup.get()
-
-                    //이전코드
-                    //val myNumber: ArrayList<Int> = arrayListOf()
-                    val myNumberList: ArrayList<Int> = arrayListOf()
-                    val backgroundList = arrayListOf<Boolean>()
-                    val bonusBackgroundList = arrayListOf<Boolean>()
-                    var myPensionResult: MyPensionResult
-
-                    //당첨 복권번호 (1등, 보너스)
-                    val winNumber: ArrayList<ArrayList<Int>> = arrayListOf()
-
-                    //div 태그의 class="win720_num"인 요소들 파싱
-                    val elements: Elements = doc
-                        .select("div.win720_num")
-                    //당첨 번호 추출
-                    for (i in 0..1) {
-                        val tempList = arrayListOf<Int>()
-                        //보너스 번호는 조 상관 x
-                        if (i == 1) {
-                            tempList.add(0)
-                        } else {
-                            //당첨번호의 조 파싱
-                            val e = elements[i]
-                                //span 태그 class="group"의 하위 span 태그 파싱
-                                .select("span.group span")
-                                .text().toIntOrNull()
-                            //toInt 불가능 할 경우 오류처리.
-                            if (e == null)
-                                break
-                            tempList.add(e)
-                        }
-                        //당첨 번호 파싱
-                        for (j in 1..6) {
-                            val temp = elements[i]
-                                .select("span.num.al720_color$j span")
-                            temp.text().toIntOrNull()?.let { tempList.add(it) }
-                        }
-                        winNumber.add(tempList)
-                    }
-
-                    Log.d("jsoup2", winNumber.toString())
-
-                    val groupNum =
-                        elements[2]
-                            .select("span.group_list span")
-                            .text().toInt()
-
-                    if (winNumber[0][0] == groupNum)
-                        backgroundList.add(true)
-                    else
-                        backgroundList.add(false)
-
-                    //내 번호 추출하기
-                    myNumberList.add(
-                        groupNum
-                    )
-
-                    val result = doc.select("strong.result").text().toString().split(" ")
-
-                    for (i in 1..6) {
-                        val temp = elements[2]
-                            .select("span.num.al720_color$i span")
-                        val num = temp.text().toInt()
-                        myNumberList.add(num)
-                        if (winNumber[0][i] == groupNum)
-                            backgroundList.add(true)
-                        else
-                            backgroundList.add(false)
-                        if (i < 6 && winNumber[1][i] == groupNum)
-                            bonusBackgroundList.add(true)
-                        else
-                            bonusBackgroundList.add(false)
-                    }
-                    Log.d("jsoup3", myNumberList.toString())
-                    myPensionResult = MyPensionResult(result[0], result[1], MyPensionNumber(backgroundList, myNumberList, bonusBackgroundList))
-                } catch (e: Exception) {
-
-                }
-            }
-            //after
-        }
-    }
-
-    //로또 6/45 QR 코드 스캔 결과 크롤링 함수
-    private fun getQrCodeScanResultLotto() {
-        launch {
-            withContext(Dispatchers.IO) {
-                try {
-                    //크롤링할 주소 지정
-                    val jsoup =
-                        Jsoup.connect("https://m.dhlottery.co.kr/qr.do?method=winQr&v=1000q012023374344q040620213345q121520233739q232830333437q0218202132441739553448")
-                    //사이트 크롤링
-                    val doc: Document = jsoup.get()
-                    Log.d("lottoDoc", doc.toString())
-
-                    //당첨 복권번호 1등
-                    val winNumber: ArrayList<Int> = arrayListOf()
-                    //내 번호
-                    val myLottoResults: ArrayList<MyLottoResult> = arrayListOf()
-
-                    //1등 번호 추출
-                    val winElements = doc.select("div.bx_winner")
-                    Log.d("winLotto", winElements.toString())
-
-                    val temp = winElements
-                        .select("div.clr.clr span").text()
-                    Log.d("winLottoNum", temp)
-
-                    //1등 당첨번호 숫자 배열로 변환
-                    temp.split(" ").forEach {
-                        winNumber.add(it.toInt())
-                    }
-
-                    //내 번호 추출
-                    val myNumberElements = doc.select("div.list_my_number")
-                    Log.d("myLotto", myNumberElements.toString())
-
-                    //내 번호 차례대로 추출
-                    myNumberElements.select("tr")
-                        .forEach {
-                            val tempList = arrayListOf<Int>()
-                            val tempBackgroundList = arrayListOf<Int>()
-                            val tempResult = it.select("td.result").text()
-                            it.select("span.clr").text().split(" ").forEach { n ->
-                                val num = n.toInt()
-                                if (winNumber.contains(num)) {
-                                    tempBackgroundList.add(num/10)
-                                } else {
-                                    tempBackgroundList.add(-1)
-                                }
-                                tempList.add(num)
-                            }
-                            myLottoResults.add(MyLottoResult(tempResult,MyLottoNumber(tempBackgroundList, tempList)))
-                        }
-                    Log.d("myLottos", myLottoResults.toString())
-                } catch (e: Exception) {
-
-                }
-            }
-            //after
-        }
-    }
-
     companion object {
         val QR_INTENT_KEY = "QR_INTENT_KEY"
+        val LOTTO_RESULT_KEY = "LOTTO_RESULT"
+        val PENSION_RESULT_KEY = "PENSION_RESULT"
+        //네트워크 상태 확인
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val nw      = connectivityManager.activeNetwork ?: return false
+                val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+
+                return when {
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                    //for other device how are able to connect with Ethernet
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                    //for check internet over Bluetooth
+                    actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+                    else -> false
+                }
+            } else {
+                return connectivityManager.activeNetworkInfo?.isConnected ?: false
+            }
+        }
     }
 }
