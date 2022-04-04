@@ -4,6 +4,8 @@
     package="aqper.side_project.lotterymanager">
 
     <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -15,6 +17,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LotteryManager">
+        <activity
+            android:name=".LottoResultActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PensionResultActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
