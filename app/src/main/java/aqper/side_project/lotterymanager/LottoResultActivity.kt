@@ -5,19 +5,18 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import aqper.side_project.lotterymanager.MainActivity.Companion.LOTTO_RESULT_KEY
 import aqper.side_project.lotterymanager.MainActivity.Companion.isNetworkAvailable
+import aqper.side_project.lotterymanager.data.database.DatabaseProvider
+import aqper.side_project.lotterymanager.data.entity.MyLottoResultEntity
 import aqper.side_project.lotterymanager.databinding.ActivityLottoResultBinding
-import aqper.side_project.lotterymanager.models.MyLottoNumber
 import aqper.side_project.lotterymanager.models.MyLottoResult
 import kotlinx.coroutines.*
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 
 class LottoResultActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var binding: ActivityLottoResultBinding
@@ -35,6 +34,7 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
         setContentView(binding.root)
 
         getQrCodeScanResultLotto()
+        initLayout()
     }
 
     //로또 6/45 QR 코드 스캔 결과 크롤링 함수
@@ -68,15 +68,18 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
                         .select("div.clr.clr span").text()
                     Log.d("winLottoNum", temp)
 
-                    //1등 당첨번호 숫자 배열로 변환
-                    temp.split(" ").forEach {
-                        winNumber.add(it.toInt())
-                    }
-
                     //당첨 액수 추출
                     winningAmmount = doc.select("div.bx_notice.winner span.key_clr1").text()
                     //회차 추출
                     roundText = doc.select("span.key_clr1").text()
+
+                    //미추첨인지 판별
+                    if (temp.length == 0) winningAmmount = "미추첨"
+
+                    //1등 당첨번호 숫자 배열로 변환
+                    temp.split(" ").forEach {
+                        winNumber.add(it.toInt())
+                    }
 
                     //내 번호 추출
                     val myNumberElements = doc.select("div.list_my_number")
@@ -100,7 +103,8 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
                             myLottoResults!!.add(
                                 MyLottoResult(
                                     tempResult,
-                                    MyLottoNumber(tempBackgroundList, tempList)
+                                    tempBackgroundList,
+                                    tempList
                                 )
                             )
                         }
@@ -114,6 +118,27 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    private fun initLayout() {
+        binding.registResultButton.setOnClickListener {
+            myLottoResults ?: return@setOnClickListener
+            var wAmmount = 0
+            if (winningAmmount != "") {
+                wAmmount = winningAmmount.replace("원", "").replace(",", "").toInt()
+            }
+            launch {
+                withContext(Dispatchers.IO) {
+                    DatabaseProvider.provideDB(this@LottoResultActivity).myLottoResultDao()
+                        .insert(MyLottoResultEntity(null,
+                            roundText,
+                            wAmmount,
+                            myLottoResults!!.size,
+                            myLottoResults!!
+                        ))
+                }
+            }
+        }
+    }
+
     private fun displayLottoResult() {
         myLottoResults ?: return
         //회차 텍스트 지정
@@ -123,6 +148,12 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
             binding.resultTextView1.text = "아쉽게도,"
             binding.resultTextView3.text = "낙첨되셨습니다."
             binding.resultTextView2.isGone = true
+        } else if (winningAmmount == "미추첨"){
+            binding.registResultButton.isGone = true
+            binding.resultTextView2.isGone = true
+            binding.resultTextView1.isGone = true
+            binding.resultTextView3.text = "미추첨 복권입니다."
+            return
         } else {
             binding.resultTextView1.text = "축하합니다!"
             binding.resultTextView2.text = "총 ${winningAmmount}에"
@@ -132,12 +163,12 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
         //동적으로 커스텀 레이아웃 추가
         val layoutInflater = this.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         for (lottoResult in myLottoResults!!) {
-            val lottoResultView = layoutInflater.inflate(R.layout.result_lotto_row_item, null)
+            val lottoResultView = layoutInflater.inflate(R.layout.result_lotto, null)
             var resultTextView = lottoResultView.findViewById<TextView>(R.id.result)
-            resultTextView.text = lottoResult.winLank
+            resultTextView.text = if (winningAmmount == "미추첨") "미추첨" else lottoResult.winLank
             for (j in (1..6)) {
                 val resource = applicationContext.resources.getIdentifier(
-                    "lottery_number_shape_${lottoResult.myLottoNumbers.backgroundList}",
+                    "lottery_number_shape_${lottoResult.backgroundList[j-1]}",
                     "drawable",
                     applicationContext.packageName
                 )
@@ -150,8 +181,8 @@ class LottoResultActivity : AppCompatActivity(), CoroutineScope {
                     5 -> textView = lottoResultView.findViewById<TextView>(R.id.lottoNumber5)
                     6 -> textView = lottoResultView.findViewById<TextView>(R.id.lottoNumber6)
                 }
-                textView?.text = lottoResult.myLottoNumbers.numberList[j-1].toString()
-                if (lottoResult.myLottoNumbers.backgroundList[j-1] != -1)
+                textView?.text = lottoResult.numberList[j-1].toString()
+                if (lottoResult.backgroundList[j-1] != -1)
                     textView?.setBackgroundResource(resource)
                 textView?.isVisible = true
                 Log.d("textView", textView.toString())
