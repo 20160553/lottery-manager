@@ -8,9 +8,12 @@
 
     <TextView
         android:id="@+id/roundTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="28sp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:paddingVertical="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -38,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:textSize="30sp"
             tools:text="1등" />
 
@@ -46,10 +50,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="8dp"
             android:textSize="30sp"
             tools:text="당첨되셨습니다."/>
 
         <Button
+            android:id="@+id/registResultButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="결과 등록" />

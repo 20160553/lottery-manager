@@ -11,11 +11,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.view.isGone
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
+import aqper.side_project.lotterymanager.adapters.LottoResultListAdapter
+import aqper.side_project.lotterymanager.data.database.DatabaseProvider
+import aqper.side_project.lotterymanager.data.database.MyLotteryDatabase
+import aqper.side_project.lotterymanager.data.entity.MyLottoResultEntity
 import aqper.side_project.lotterymanager.databinding.ActivityMainBinding
-import aqper.side_project.lotterymanager.models.MyLottoNumber
-import aqper.side_project.lotterymanager.models.MyLottoResult
-import aqper.side_project.lotterymanager.models.MyPensionNumber
-import aqper.side_project.lotterymanager.models.MyPensionResult
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.*
@@ -23,14 +25,15 @@ import org.jsoup.HttpStatusException
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var binding: ActivityMainBinding
     private lateinit var qrcodeLauncher: ActivityResultLauncher<ScanOptions>
+    private lateinit var lottoResultListAdapter: LottoResultListAdapter
+    private lateinit var pensionResultListAdapter: LottoResultListAdapter
 
     private val mainViewModel = MainViewModel()
-
+    private lateinit var db: MyLotteryDatabase
     //코루틴 설정
     private val job = Job()
     override val coroutineContext get() = Dispatchers.Main + job
@@ -40,9 +43,30 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        db = DatabaseProvider.provideDB(this)
+
         initQRCodeScanner()
         initViews()
         getRecentResult()
+        initLottoResultRecyclerView()
+        initPensionResultRecyclerView()
+    }
+
+    private fun initLottoResultRecyclerView() {
+        lottoResultListAdapter = LottoResultListAdapter()
+        binding.lottoResultRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.lottoResultRecyclerView.adapter = lottoResultListAdapter
+        launch {
+            var cResultList: List<MyLottoResultEntity>
+            withContext(Dispatchers.IO) {
+                cResultList = db.myLottoResultDao().getAll()
+            }
+            lottoResultListAdapter.submitList(cResultList)
+        }
+    }
+
+    private fun initPensionResultRecyclerView() {
+//        TODO("Not yet implemented")
     }
 
     private fun initViews() = with(binding) {
@@ -68,11 +92,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 binding.roundTextView.text = mainViewModel.currentPensionRound
                 pensionLayout.root.isGone = false
                 lottoLayout.root.isGone = true
+                pensionResultRecyclerView.isGone = false
+                lottoResultRecyclerView.isGone = true
             } else {
                 //로또복권
                 binding.roundTextView.text = mainViewModel.currentLottoRound
                 pensionLayout.root.isGone = true
                 lottoLayout.root.isGone = false
+                pensionResultRecyclerView.isGone = true
+                lottoResultRecyclerView.isGone = false
             }
         }
     }
